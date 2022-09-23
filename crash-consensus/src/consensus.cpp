@@ -81,13 +81,16 @@ void RdmaConsensus::run() {
   std::vector<int> ids(remote_ids);
   ids.push_back(my_id);
 
-  // Get the last device
+  // Get the IB device.
   {
     // TODO: The copy constructor is invoked here if we use auto and then
     // iterate on the dev_lst
     // auto dev_lst = d.list();
     for (auto& dev : d.list()) {
-      od = std::move(dev);
+      if (dev.transport_type() == OpenDevice::TransportType::IB) {
+        od = std::move(dev);
+        break;
+      }
     }
   }
 
